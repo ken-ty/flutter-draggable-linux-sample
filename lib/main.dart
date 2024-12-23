@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'dart:math';
 
 void main() {
   runApp(const ProviderScope(child: MyApp()));
@@ -14,6 +15,7 @@ class MyApp extends StatelessWidget {
       home: Scaffold(
         appBar: AppBar(title: const Text('Drag and Drop Example')),
         body: const DragDropExample(),
+        floatingActionButton: const DragDropControls(),
       ),
     );
   }
@@ -36,8 +38,6 @@ final dragItemsProvider =
     StateNotifierProvider<DragItemsNotifier, List<DragItem>>((ref) {
   return DragItemsNotifier([
     DragItem(x: 100, y: 100, index: 0),
-    DragItem(x: 200, y: 200, index: 1),
-    DragItem(x: 300, y: 300, index: 2),
   ]);
 });
 
@@ -57,7 +57,36 @@ class DragItemsNotifier extends StateNotifier<List<DragItem>> {
         else
           state[i]
     ];
-    debugPrint('state: ${state[0].x}, ${state[0].y}, ${state[0].theta}');
+  }
+
+  void incrementTheta(int index) {
+    state = [
+      for (int i = 0; i < state.length; i++)
+        if (i == index)
+          DragItem(
+            x: state[i].x,
+            y: state[i].y,
+            theta: (state[i].theta + pi / 180) % (2 * pi),
+            index: state[i].index,
+          )
+        else
+          state[i]
+    ];
+  }
+
+  void addItem() {
+    final newIndex = state.isEmpty ? 0 : state.last.index + 1;
+    state = [
+      ...state,
+      DragItem(
+          x: 100.0 * (newIndex + 1),
+          y: 100.0 * (newIndex + 1),
+          index: newIndex),
+    ];
+  }
+
+  void removeItem(int index) {
+    state = state.where((item) => item.index != index).toList();
   }
 }
 
@@ -79,23 +108,70 @@ class DragDropExample extends ConsumerWidget {
             onPanUpdate: (details) {
               notifier.updateItem(index, details.delta.dx, details.delta.dy);
             },
-            child: Transform.rotate(
-              angle: item.theta,
-              child: Container(
-                width: 100,
-                height: 100,
-                color: Colors.primaries[index % Colors.primaries.length],
-                child: Center(
-                  child: Text(
-                    'Drag ${item.index + 1}',
-                    style: const TextStyle(color: Colors.white),
+            child: Stack(
+              children: [
+                Transform.rotate(
+                  angle: item.theta,
+                  alignment: Alignment.center,
+                  child: Container(
+                    width: 100,
+                    height: 100,
+                    color: Colors.primaries[index % Colors.primaries.length],
+                    child: Center(
+                      child: Text(
+                        'Drag ${item.index + 1}',
+                        style: const TextStyle(color: Colors.white),
+                      ),
+                    ),
                   ),
                 ),
-              ),
+                Positioned(
+                  top: 0,
+                  right: 0,
+                  child: IconButton(
+                    icon: const Icon(Icons.rotate_right, color: Colors.black),
+                    onPressed: () {
+                      notifier.incrementTheta(index);
+                    },
+                  ),
+                ),
+              ],
             ),
           ),
         );
       }),
+    );
+  }
+}
+
+class DragDropControls extends ConsumerWidget {
+  const DragDropControls({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final notifier = ref.read(dragItemsProvider.notifier);
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        FloatingActionButton(
+          onPressed: () {
+            notifier.addItem();
+          },
+          tooltip: 'Add Item',
+          child: const Icon(Icons.add),
+        ),
+        const SizedBox(width: 10),
+        FloatingActionButton(
+          onPressed: () {
+            if (ref.read(dragItemsProvider).isNotEmpty) {
+              notifier.removeItem(ref.read(dragItemsProvider).last.index);
+            }
+          },
+          tooltip: 'Remove Item',
+          child: const Icon(Icons.remove),
+        ),
+      ],
     );
   }
 }
