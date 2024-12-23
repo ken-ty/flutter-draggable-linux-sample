@@ -1,0 +1,12 @@
+/home/c-0025/ghq/github.com/ken-ty/flutter-draggable-linux-sample/build/linux/x64/debug/bundle/flutter_draggable_linux_sample
+/home/c-0025/ghq/github.com/ken-ty/flutter-draggable-linux-sample/build/linux/x64/debug/bundle/data/icudtl.dat
+/home/c-0025/ghq/github.com/ken-ty/flutter-draggable-linux-sample/build/linux/x64/debug/bundle/lib/libflutter_linux_gtk.so
+/home/c-0025/ghq/github.com/ken-ty/flutter-draggable-linux-sample/build/linux/x64/debug/bundle/data/flutter_assets/FontManifest.json
+/home/c-0025/ghq/github.com/ken-ty/flutter-draggable-linux-sample/build/linux/x64/debug/bundle/data/flutter_assets/shaders/ink_sparkle.frag
+/home/c-0025/ghq/github.com/ken-ty/flutter-draggable-linux-sample/build/linux/x64/debug/bundle/data/flutter_assets/AssetManifest.json
+/home/c-0025/ghq/github.com/ken-ty/flutter-draggable-linux-sample/build/linux/x64/debug/bundle/data/flutter_assets/version.json
+/home/c-0025/ghq/github.com/ken-ty/flutter-draggable-linux-sample/build/linux/x64/debug/bundle/data/flutter_assets/NOTICES.Z
+/home/c-0025/ghq/github.com/ken-ty/flutter-draggable-linux-sample/build/linux/x64/debug/bundle/data/flutter_assets/kernel_blob.bin
+/home/c-0025/ghq/github.com/ken-ty/flutter-draggable-linux-sample/build/linux/x64/debug/bundle/data/flutter_assets/assets/.gitkeep
+/home/c-0025/ghq/github.com/ken-ty/flutter-draggable-linux-sample/build/linux/x64/debug/bundle/data/flutter_assets/AssetManifest.bin
+/home/c-0025/ghq/github.com/ken-ty/flutter-draggable-linux-sample/build/linux/x64/debug/bundle/data/flutter_assets/fonts/MaterialIcons-Regular.otf

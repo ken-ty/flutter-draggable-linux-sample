@@ -1,0 +1,1 @@
+ /home/c-0025/ghq/github.com/ken-ty/flutter-draggable-linux-sample/.dart_tool/flutter_build/019d1cf476ddb45b1646f66411393cc3/native_assets.yaml: 
