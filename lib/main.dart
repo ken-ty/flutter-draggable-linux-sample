@@ -9,11 +9,11 @@ void main() {
   runApp(const ProviderScope(child: MyApp()));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
@@ -23,10 +23,8 @@ class MyApp extends StatelessWidget {
               icon: const Icon(Icons.add),
               onPressed: () {
                 // Add a new item via the provider
-                final container = ProviderContainer();
-                final notifier = container.read(dragItemsProvider.notifier);
+                final notifier = ref.read(dragItemsProvider.notifier);
                 notifier.addItem();
-                container.dispose();
               },
             ),
           ],
@@ -79,6 +77,7 @@ class _ReorderableControlsListView extends ConsumerWidget {
               onPressed: () => notifier.removeItem(items[index].id),
             ),
             onTap: () {
+              debugPrint('Tapped on item with id: ${items[index].id}');
               notifier.bringItemToFront(items[index].id); // 選択されたアイテムを最前面に移動
               selectedNotifier.update((state) => {
                     ...state,
@@ -108,6 +107,7 @@ class DragItem with _$DragItem {
 
 final dragItemsProvider =
     StateNotifierProvider<DragItemsNotifier, List<DragItem>>((ref) {
+  debugPrint('Initializing DragItemsProvider');
   return DragItemsNotifier([]);
 });
 
@@ -138,6 +138,7 @@ class DragItemsNotifier extends StateNotifier<List<DragItem>> {
   }
 
   void addItem() {
+    debugPrint('Adding new item');
     final newId = state.isEmpty ? 0 : state.last.id + 1;
     final newIndex = state.length;
     final newX = 100.0 * (newId + 1);
@@ -156,6 +157,7 @@ class DragItemsNotifier extends StateNotifier<List<DragItem>> {
   }
 
   void removeItem(int id) {
+    debugPrint('Removing item with id: $id');
     state = [
       for (final item in state)
         if (item.id != id)
@@ -164,6 +166,7 @@ class DragItemsNotifier extends StateNotifier<List<DragItem>> {
   }
 
   void bringItemToFront(int id) {
+    debugPrint('Bringing item with id: $id to front');
     final itemToBring = state.firstWhere((item) => item.id == id);
     state = [
       ...state
@@ -174,6 +177,7 @@ class DragItemsNotifier extends StateNotifier<List<DragItem>> {
   }
 
   void reorderItem(int oldIndex, int newIndex) {
+    debugPrint('Reordering item from index $oldIndex to index $newIndex');
     final item = state.removeAt(oldIndex);
     state.insert(newIndex, item);
     state = [
@@ -207,7 +211,9 @@ class DragDropExample extends ConsumerWidget {
 
     return Stack(
       children: [
+        // Stack の背景色を目一杯広げる。 Stack の範囲を見るため
         Positioned.fill(child: ColoredBox(color: Colors.grey)),
+        // 作業台を追加する
         Positioned.fill(
           child: Padding(
             padding: const EdgeInsets.all(20),
@@ -220,7 +226,9 @@ class DragDropExample extends ConsumerWidget {
             ),
           ),
         ),
+        // 作業台の外でもアイテムはDrag可能
         for (int index = 0; index < items.length; index++)
+          // 2重で Stack しているのは rotate で 表示が見切れるのを防ぐ為
           Stack(
             children: [
               Positioned(
@@ -231,8 +239,14 @@ class DragDropExample extends ConsumerWidget {
                     // ドラッグ開始
                   },
                   onPanUpdate: (details) {
+                    debugPrint(
+                      'Item moved by dx: ${details.delta.dx}, dy: ${details.delta.dy}',
+                    );
                     notifier.updateItem(
-                        index, details.delta.dx, details.delta.dy);
+                      index,
+                      details.delta.dx,
+                      details.delta.dy,
+                    );
                   },
                   onPanEnd: (_) {
                     // ドラッグ終了
