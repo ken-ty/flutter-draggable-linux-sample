@@ -17,14 +17,13 @@ final _privateConstructorUsedError = UnsupportedError(
 /// @nodoc
 mixin _$DragItem {
   int get id => throw _privateConstructorUsedError;
+  int get index => throw _privateConstructorUsedError;
   double get x => throw _privateConstructorUsedError;
   double get y => throw _privateConstructorUsedError;
   double get originalX => throw _privateConstructorUsedError;
   double get originalY => throw _privateConstructorUsedError;
   double get theta => throw _privateConstructorUsedError;
   Size get size => throw _privateConstructorUsedError;
-  bool get isDragging => throw _privateConstructorUsedError;
-  bool get isSelected => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $DragItemCopyWith<DragItem> get copyWith =>
@@ -38,14 +37,13 @@ abstract class $DragItemCopyWith<$Res> {
   @useResult
   $Res call(
       {int id,
+      int index,
       double x,
       double y,
       double originalX,
       double originalY,
       double theta,
-      Size size,
-      bool isDragging,
-      bool isSelected});
+      Size size});
 }
 
 /// @nodoc
@@ -62,19 +60,22 @@ class _$DragItemCopyWithImpl<$Res, $Val extends DragItem>
   @override
   $Res call({
     Object? id = null,
+    Object? index = null,
     Object? x = null,
     Object? y = null,
     Object? originalX = null,
     Object? originalY = null,
     Object? theta = null,
     Object? size = null,
-    Object? isDragging = null,
-    Object? isSelected = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
+              as int,
+      index: null == index
+          ? _value.index
+          : index // ignore: cast_nullable_to_non_nullable
               as int,
       x: null == x
           ? _value.x
@@ -100,14 +101,6 @@ class _$DragItemCopyWithImpl<$Res, $Val extends DragItem>
           ? _value.size
           : size // ignore: cast_nullable_to_non_nullable
               as Size,
-      isDragging: null == isDragging
-          ? _value.isDragging
-          : isDragging // ignore: cast_nullable_to_non_nullable
-              as bool,
-      isSelected: null == isSelected
-          ? _value.isSelected
-          : isSelected // ignore: cast_nullable_to_non_nullable
-              as bool,
     ) as $Val);
   }
 }
@@ -122,14 +115,13 @@ abstract class _$$DragItemImplCopyWith<$Res>
   @useResult
   $Res call(
       {int id,
+      int index,
       double x,
       double y,
       double originalX,
       double originalY,
       double theta,
-      Size size,
-      bool isDragging,
-      bool isSelected});
+      Size size});
 }
 
 /// @nodoc
@@ -144,19 +136,22 @@ class __$$DragItemImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? id = null,
+    Object? index = null,
     Object? x = null,
     Object? y = null,
     Object? originalX = null,
     Object? originalY = null,
     Object? theta = null,
     Object? size = null,
-    Object? isDragging = null,
-    Object? isSelected = null,
   }) {
     return _then(_$DragItemImpl(
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
+              as int,
+      index: null == index
+          ? _value.index
+          : index // ignore: cast_nullable_to_non_nullable
               as int,
       x: null == x
           ? _value.x
@@ -182,14 +177,6 @@ class __$$DragItemImplCopyWithImpl<$Res>
           ? _value.size
           : size // ignore: cast_nullable_to_non_nullable
               as Size,
-      isDragging: null == isDragging
-          ? _value.isDragging
-          : isDragging // ignore: cast_nullable_to_non_nullable
-              as bool,
-      isSelected: null == isSelected
-          ? _value.isSelected
-          : isSelected // ignore: cast_nullable_to_non_nullable
-              as bool,
     ));
   }
 }
@@ -199,17 +186,18 @@ class __$$DragItemImplCopyWithImpl<$Res>
 class _$DragItemImpl implements _DragItem {
   const _$DragItemImpl(
       {required this.id,
+      required this.index,
       required this.x,
       required this.y,
       required this.originalX,
       required this.originalY,
       this.theta = 0.0,
-      this.size = DragItem.defaultSize,
-      this.isDragging = false,
-      this.isSelected = false});
+      this.size = DragItem.defaultSize});
 
   @override
   final int id;
+  @override
+  final int index;
   @override
   final double x;
   @override
@@ -224,16 +212,10 @@ class _$DragItemImpl implements _DragItem {
   @override
   @JsonKey()
   final Size size;
-  @override
-  @JsonKey()
-  final bool isDragging;
-  @override
-  @JsonKey()
-  final bool isSelected;
 
   @override
   String toString() {
-    return 'DragItem(id: $id, x: $x, y: $y, originalX: $originalX, originalY: $originalY, theta: $theta, size: $size, isDragging: $isDragging, isSelected: $isSelected)';
+    return 'DragItem(id: $id, index: $index, x: $x, y: $y, originalX: $originalX, originalY: $originalY, theta: $theta, size: $size)';
   }
 
   @override
@@ -242,6 +224,7 @@ class _$DragItemImpl implements _DragItem {
         (other.runtimeType == runtimeType &&
             other is _$DragItemImpl &&
             (identical(other.id, id) || other.id == id) &&
+            (identical(other.index, index) || other.index == index) &&
             (identical(other.x, x) || other.x == x) &&
             (identical(other.y, y) || other.y == y) &&
             (identical(other.originalX, originalX) ||
@@ -249,16 +232,12 @@ class _$DragItemImpl implements _DragItem {
             (identical(other.originalY, originalY) ||
                 other.originalY == originalY) &&
             (identical(other.theta, theta) || other.theta == theta) &&
-            (identical(other.size, size) || other.size == size) &&
-            (identical(other.isDragging, isDragging) ||
-                other.isDragging == isDragging) &&
-            (identical(other.isSelected, isSelected) ||
-                other.isSelected == isSelected));
+            (identical(other.size, size) || other.size == size));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, id, x, y, originalX, originalY,
-      theta, size, isDragging, isSelected);
+  int get hashCode => Object.hash(
+      runtimeType, id, index, x, y, originalX, originalY, theta, size);
 
   @JsonKey(ignore: true)
   @override
@@ -270,17 +249,18 @@ class _$DragItemImpl implements _DragItem {
 abstract class _DragItem implements DragItem {
   const factory _DragItem(
       {required final int id,
+      required final int index,
       required final double x,
       required final double y,
       required final double originalX,
       required final double originalY,
       final double theta,
-      final Size size,
-      final bool isDragging,
-      final bool isSelected}) = _$DragItemImpl;
+      final Size size}) = _$DragItemImpl;
 
   @override
   int get id;
+  @override
+  int get index;
   @override
   double get x;
   @override
@@ -293,10 +273,6 @@ abstract class _DragItem implements DragItem {
   double get theta;
   @override
   Size get size;
-  @override
-  bool get isDragging;
-  @override
-  bool get isSelected;
   @override
   @JsonKey(ignore: true)
   _$$DragItemImplCopyWith<_$DragItemImpl> get copyWith =>
