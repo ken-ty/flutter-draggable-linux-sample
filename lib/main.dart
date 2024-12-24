@@ -261,6 +261,8 @@ class DragDropExample extends ConsumerWidget {
           children: [
             Positioned.fill(
               child: Container(
+                width: double.infinity,
+                height: double.infinity,
                 color: Colors.grey,
               ),
             ),
@@ -278,58 +280,56 @@ class DragDropExample extends ConsumerWidget {
             ),
             ...List.generate(items.length, (index) {
               return Positioned(
-                child: Positioned(
-                  left: items[index].x,
-                  top: items[index].y,
-                  child: GestureDetector(
-                    onPanStart: (_) {
-                      // ドラッグ開始
-                    },
-                    onPanUpdate: (details) {
-                      debugPrint(
-                          'Item moved by dx: ${details.delta.dx}, dy: ${details.delta.dy}');
-                      notifier.updateItem(
-                          index, details.delta.dx, details.delta.dy);
-                    },
-                    onPanEnd: (_) {
-                      // ドラッグ終了
-                    },
-                    onTap: () {
-                      debugPrint('Tapped on item with id: ${items[index].id}');
-                      notifier.bringItemToFront(items[index].id);
-                      selectedNotifier.update((state) => {
-                            ...state,
-                            items[index].id: !(state[items[index].id] ?? false),
-                          });
-                    },
-                    child: Transform.rotate(
-                      angle: items[index].theta,
-                      alignment: Alignment.center,
-                      child: Container(
-                        width:
-                            _getRelativeItemSize(items[index].size, constraints)
-                                .width,
-                        height:
-                            _getRelativeItemSize(items[index].size, constraints)
-                                .height,
-                        decoration: BoxDecoration(
+                left: items[index].x,
+                top: items[index].y,
+                child: GestureDetector(
+                  onPanStart: (_) {
+                    // ドラッグ開始
+                  },
+                  onPanUpdate: (details) {
+                    debugPrint(
+                        'Item moved by dx: ${details.delta.dx}, dy: ${details.delta.dy}');
+                    notifier.updateItem(
+                        index, details.delta.dx, details.delta.dy);
+                  },
+                  onPanEnd: (_) {
+                    // ドラッグ終了
+                  },
+                  onTap: () {
+                    debugPrint('Tapped on item with id: ${items[index].id}');
+                    notifier.bringItemToFront(items[index].id);
+                    selectedNotifier.update((state) => {
+                          ...state,
+                          items[index].id: !(state[items[index].id] ?? false),
+                        });
+                  },
+                  child: Transform.rotate(
+                    angle: items[index].theta,
+                    alignment: Alignment.center,
+                    child: Container(
+                      width:
+                          _getRelativeItemSize(items[index].size, constraints)
+                              .width,
+                      height:
+                          _getRelativeItemSize(items[index].size, constraints)
+                              .height,
+                      decoration: BoxDecoration(
+                        color: (selectedItems[items[index].id] ?? false)
+                            ? Colors.blue.withOpacity(0.7)
+                            : Colors.primaries[
+                                items[index].id % Colors.primaries.length],
+                        border: Border.all(
                           color: (selectedItems[items[index].id] ?? false)
-                              ? Colors.blue.withOpacity(0.7)
-                              : Colors.primaries[
-                                  items[index].id % Colors.primaries.length],
-                          border: Border.all(
-                            color: (selectedItems[items[index].id] ?? false)
-                                ? Colors.blue
-                                : Colors.transparent,
-                            width: 2,
-                          ),
-                          borderRadius: BorderRadius.circular(10),
+                              ? Colors.blue
+                              : Colors.transparent,
+                          width: 2,
                         ),
-                        child: Center(
-                          child: Text(
-                            'Drag ${items[index].id + 1}',
-                            style: const TextStyle(color: Colors.white),
-                          ),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Center(
+                        child: Text(
+                          'Drag ${items[index].id + 1}',
+                          style: const TextStyle(color: Colors.white),
                         ),
                       ),
                     ),
