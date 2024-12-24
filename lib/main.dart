@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'dart:math';
+
+part 'main.freezed.dart';
 
 void main() {
   runApp(const ProviderScope(child: MyApp()));
@@ -52,12 +55,12 @@ class _ControlsListView extends ConsumerWidget {
         return ListTile(
           leading: CircleAvatar(
             backgroundColor: Colors.primaries[index % Colors.primaries.length],
-            child: Text('${item.index + 1}'),
+            child: Text('${item.id + 1}'),
           ),
-          title: Text('Item ${item.index + 1}'),
+          title: Text('Item ${item.id + 1}'),
           trailing: IconButton(
             icon: const Icon(Icons.delete, color: Colors.red),
-            onPressed: () => notifier.removeItem(item.index),
+            onPressed: () => notifier.removeItem(item.id),
           ),
         );
       },
@@ -65,31 +68,25 @@ class _ControlsListView extends ConsumerWidget {
   }
 }
 
-class DragItem {
-  double x;
-  double y;
-  double theta;
-  int index;
-  final double originalX;
-  final double originalY;
-  bool isDragging;
-
-  DragItem({
-    required this.x,
-    required this.y,
-    this.theta = 0.0,
-    required this.index,
-    required this.originalX,
-    required this.originalY,
-    this.isDragging = false,
-  });
+@freezed
+class DragItem with _$DragItem {
+  static const defaultSize = Size(100, 100);
+  const factory DragItem({
+    required int id,
+    required double x,
+    required double y,
+    required double originalX,
+    required double originalY,
+    @Default(0.0) double theta,
+    @Default(DragItem.defaultSize) Size size,
+    @Default(false) bool isDragging,
+    @Default(false) bool isSelected,
+  }) = _DragItem;
 }
 
 final dragItemsProvider =
     StateNotifierProvider<DragItemsNotifier, List<DragItem>>((ref) {
-  return DragItemsNotifier([
-    DragItem(x: 100, y: 100, index: 0, originalX: 100, originalY: 100),
-  ]);
+  return DragItemsNotifier([]);
 });
 
 class DragItemsNotifier extends StateNotifier<List<DragItem>> {
@@ -103,7 +100,7 @@ class DragItemsNotifier extends StateNotifier<List<DragItem>> {
             x: state[i].x + dx,
             y: state[i].y + dy,
             theta: state[i].theta,
-            index: state[i].index,
+            id: state[i].id,
             originalX: state[i].originalX,
             originalY: state[i].originalY,
             isDragging: state[i].isDragging,
@@ -121,7 +118,7 @@ class DragItemsNotifier extends StateNotifier<List<DragItem>> {
             x: state[i].x,
             y: state[i].y,
             theta: state[i].theta,
-            index: state[i].index,
+            id: state[i].id,
             originalX: state[i].originalX,
             originalY: state[i].originalY,
             isDragging: isDragging,
@@ -139,7 +136,7 @@ class DragItemsNotifier extends StateNotifier<List<DragItem>> {
             x: state[i].x,
             y: state[i].y,
             theta: (state[i].theta + pi / 180) % (2 * pi),
-            index: state[i].index,
+            id: state[i].id,
             originalX: state[i].originalX,
             originalY: state[i].originalY,
             isDragging: state[i].isDragging,
@@ -150,23 +147,23 @@ class DragItemsNotifier extends StateNotifier<List<DragItem>> {
   }
 
   void addItem() {
-    final newIndex = state.isEmpty ? 0 : state.last.index + 1;
-    final newX = 100.0 * (newIndex + 1);
-    final newY = 100.0 * (newIndex + 1);
+    final newId = state.isEmpty ? 0 : state.last.id + 1;
+    final newX = 100.0 * (newId + 1);
+    final newY = 100.0 * (newId + 1);
     state = [
       ...state,
       DragItem(
         x: newX,
         y: newY,
-        index: newIndex,
+        id: newId,
         originalX: newX,
         originalY: newY,
       ),
     ];
   }
 
-  void removeItem(int index) {
-    state = state.where((item) => item.index != index).toList();
+  void removeItem(int id) {
+    state = state.where((item) => item.id != id).toList();
   }
 }
 
@@ -227,7 +224,7 @@ class DragDropExample extends ConsumerWidget {
                               Colors.primaries[index % Colors.primaries.length],
                           child: Center(
                             child: Text(
-                              'Drag ${items[index].index + 1}',
+                              'Drag ${items[index].id + 1}',
                               style: const TextStyle(color: Colors.white),
                             ),
                           ),
