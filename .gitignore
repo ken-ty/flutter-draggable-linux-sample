@@ -1,14 +1,19 @@
 # Dart related files
-*.dart_tool/
+.dart_tool/
 .packages
 .pub/
-build/
 .flutter-plugins
 .flutter-plugins-dependencies
-.dart_tool/
+
+# Build output
+build/
+
+# Generated plugin registrant
+*/flutter/generated_plugin_registrant.*
 
 # Linux build directory
 build/linux/
+linux/flutter/ephemeral/
 
 # CMake files
 **/CMakeCache.txt
@@ -17,21 +22,11 @@ build/linux/
 **/cmake_install.cmake
 **/compile_commands.json
 
-# Object files
+# Object files and libraries
 *.o
 *.so
 *.a
 *.lo
-
-# Generated files
-*/flutter/generated_plugin_registrant.*
-/linux/flutter/ephemeral/
-
-# Desktop files
-/linux/.idea/
-/linux/.vscode/
-linux/app/Debug/
-linux/app/Release/
 
 # Logs and temporary files
 *.log
@@ -39,3 +34,24 @@ linux/app/Release/
 *.swp
 *.lock
 *.bak
+
+# IDE-specific files
+*.idea/
+*.vscode/
+*.iml
+
+# Desktop specific files
+linux/app/Debug/
+linux/app/Release/
+
+# User-specific files
+*.DS_Store
+*.directory
+Thumbs.db
+
+# Miscellaneous
+*.class
+*.pyc
+*.pyo
+*.env
+*.venv
