@@ -12,17 +12,19 @@ void main() {
 class MyApp extends ConsumerWidget {
   const MyApp({Key? key}) : super(key: key);
 
+  static const title = 'Drag and Drop Example';
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp(
+      title: title,
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('Drag and Drop Example'),
+          title: const Text(title),
           actions: [
             IconButton(
               icon: const Icon(Icons.add),
               onPressed: () {
-                // Add a new item via the provider
                 final notifier = ref.read(dragItemsProvider.notifier);
                 notifier.addItem();
               },
@@ -72,9 +74,22 @@ class _ReorderableControlsListView extends ConsumerWidget {
               child: Text('${items[index].id + 1}'),
             ),
             title: Text('Item ${items[index].id + 1}'),
-            trailing: IconButton(
-              icon: const Icon(Icons.delete, color: Colors.red),
-              onPressed: () => notifier.removeItem(items[index].id),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.rotate_left),
+                  onPressed: () => notifier.incrementTheta(index, -pi / 18),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.rotate_right),
+                  onPressed: () => notifier.incrementTheta(index, pi / 18),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.delete, color: Colors.red),
+                  onPressed: () => notifier.removeItem(items[index].id),
+                ),
+              ],
             ),
             onTap: () {
               debugPrint('Tapped on item with id: ${items[index].id}');
@@ -127,11 +142,11 @@ class DragItemsNotifier extends StateNotifier<List<DragItem>> {
     ];
   }
 
-  void incrementTheta(int index) {
+  void incrementTheta(int index, double deltaTheta) {
     state = [
       for (int i = 0; i < state.length; i++)
         if (i == index)
-          state[i].copyWith(theta: (state[i].theta + pi / 180) % (2 * pi))
+          state[i].copyWith(theta: (state[i].theta + deltaTheta) % (2 * pi))
         else
           state[i]
     ];
