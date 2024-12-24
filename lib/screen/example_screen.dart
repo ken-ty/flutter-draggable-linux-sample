@@ -1,11 +1,9 @@
 import 'dart:math';
 
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_draggable_linux_sample/model/drag_item.dart';
 import 'package:flutter_draggable_linux_sample/model/work_desk.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 /// メイン画面
@@ -27,11 +25,11 @@ class ExampleScreen extends StatelessWidget {
         children: [
           SizedBox(
             width: 400,
-            child: ReorderableControlsListView(),
+            child: _ReorderableControlsListView(),
           ),
           // Flexible で画面いっぱいに広がるようにする
           Flexible(
-            child: const DragDropExample(),
+            child: const _DragDropExample(),
           ),
         ],
       ),
@@ -56,8 +54,8 @@ class _AddItemButton extends ConsumerWidget {
 }
 
 /// リストビューのアイテムを表示するウィジェット
-class ReorderableControlsListView extends HookConsumerWidget {
-  const ReorderableControlsListView();
+class _ReorderableControlsListView extends HookConsumerWidget {
+  const _ReorderableControlsListView();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -86,7 +84,9 @@ class ReorderableControlsListView extends HookConsumerWidget {
               Text('Reorder'),
               SizedBox(width: 8),
               SizedBox(
-                  width: 30, child: Text(showDragHandles.value ? 'ON' : 'OFF')),
+                width: 30,
+                child: Text(showDragHandles.value ? 'ON' : 'OFF'),
+              ),
             ],
           ),
         ),
@@ -139,8 +139,8 @@ class ReorderableControlsListView extends HookConsumerWidget {
 }
 
 /// ドラッグアイテムのウィジェット
-class DragDropExample extends ConsumerWidget {
-  const DragDropExample({Key? key}) : super(key: key);
+class _DragDropExample extends ConsumerWidget {
+  const _DragDropExample({Key? key}) : super(key: key);
 
   /// スケールファクターを計算します
   ///
