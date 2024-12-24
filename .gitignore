@@ -1,5 +1,6 @@
 # Dart related files
 .dart_tool/
+.dart_tool/*/flutter_build/*
 .packages
 .pub/
 .flutter-plugins
