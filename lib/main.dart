@@ -182,6 +182,17 @@ class DragItemsNotifier extends StateNotifier<List<DragItem>> {
   }
 }
 
+@freezed
+class WorkDesk with _$WorkDesk {
+  static const defaultSize = Size(400, 400);
+  const factory WorkDesk({
+    required int id,
+    required double x,
+    required double y,
+    @Default(WorkDesk.defaultSize) Size size,
+  }) = _WorkDesk;
+}
+
 class DragDropExample extends ConsumerWidget {
   const DragDropExample({Key? key}) : super(key: key);
 
@@ -192,8 +203,23 @@ class DragDropExample extends ConsumerWidget {
     final selectedNotifier = ref.read(selectedItemsProvider.notifier);
     final notifier = ref.read(dragItemsProvider.notifier);
 
+    final workDesk = WorkDesk(id: 0, x: 0, y: 0);
+
     return Stack(
       children: [
+        Positioned.fill(child: ColoredBox(color: Colors.grey)),
+        Positioned.fill(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: FittedBox(
+              child: Container(
+                width: workDesk.size.width,
+                height: workDesk.size.height,
+                color: Colors.brown,
+              ),
+            ),
+          ),
+        ),
         for (int index = 0; index < items.length; index++)
           Stack(
             children: [
