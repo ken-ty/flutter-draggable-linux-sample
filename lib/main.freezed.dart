@@ -20,8 +20,6 @@ mixin _$DragItem {
   int get index => throw _privateConstructorUsedError;
   double get x => throw _privateConstructorUsedError;
   double get y => throw _privateConstructorUsedError;
-  double get originalX => throw _privateConstructorUsedError;
-  double get originalY => throw _privateConstructorUsedError;
   double get theta => throw _privateConstructorUsedError;
   Size get size => throw _privateConstructorUsedError;
 
@@ -35,15 +33,7 @@ abstract class $DragItemCopyWith<$Res> {
   factory $DragItemCopyWith(DragItem value, $Res Function(DragItem) then) =
       _$DragItemCopyWithImpl<$Res, DragItem>;
   @useResult
-  $Res call(
-      {int id,
-      int index,
-      double x,
-      double y,
-      double originalX,
-      double originalY,
-      double theta,
-      Size size});
+  $Res call({int id, int index, double x, double y, double theta, Size size});
 }
 
 /// @nodoc
@@ -63,8 +53,6 @@ class _$DragItemCopyWithImpl<$Res, $Val extends DragItem>
     Object? index = null,
     Object? x = null,
     Object? y = null,
-    Object? originalX = null,
-    Object? originalY = null,
     Object? theta = null,
     Object? size = null,
   }) {
@@ -84,14 +72,6 @@ class _$DragItemCopyWithImpl<$Res, $Val extends DragItem>
       y: null == y
           ? _value.y
           : y // ignore: cast_nullable_to_non_nullable
-              as double,
-      originalX: null == originalX
-          ? _value.originalX
-          : originalX // ignore: cast_nullable_to_non_nullable
-              as double,
-      originalY: null == originalY
-          ? _value.originalY
-          : originalY // ignore: cast_nullable_to_non_nullable
               as double,
       theta: null == theta
           ? _value.theta
@@ -113,15 +93,7 @@ abstract class _$$DragItemImplCopyWith<$Res>
       __$$DragItemImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {int id,
-      int index,
-      double x,
-      double y,
-      double originalX,
-      double originalY,
-      double theta,
-      Size size});
+  $Res call({int id, int index, double x, double y, double theta, Size size});
 }
 
 /// @nodoc
@@ -139,8 +111,6 @@ class __$$DragItemImplCopyWithImpl<$Res>
     Object? index = null,
     Object? x = null,
     Object? y = null,
-    Object? originalX = null,
-    Object? originalY = null,
     Object? theta = null,
     Object? size = null,
   }) {
@@ -160,14 +130,6 @@ class __$$DragItemImplCopyWithImpl<$Res>
       y: null == y
           ? _value.y
           : y // ignore: cast_nullable_to_non_nullable
-              as double,
-      originalX: null == originalX
-          ? _value.originalX
-          : originalX // ignore: cast_nullable_to_non_nullable
-              as double,
-      originalY: null == originalY
-          ? _value.originalY
-          : originalY // ignore: cast_nullable_to_non_nullable
               as double,
       theta: null == theta
           ? _value.theta
@@ -189,8 +151,6 @@ class _$DragItemImpl implements _DragItem {
       required this.index,
       required this.x,
       required this.y,
-      required this.originalX,
-      required this.originalY,
       this.theta = 0.0,
       this.size = DragItem.defaultSize});
 
@@ -203,10 +163,6 @@ class _$DragItemImpl implements _DragItem {
   @override
   final double y;
   @override
-  final double originalX;
-  @override
-  final double originalY;
-  @override
   @JsonKey()
   final double theta;
   @override
@@ -215,7 +171,7 @@ class _$DragItemImpl implements _DragItem {
 
   @override
   String toString() {
-    return 'DragItem(id: $id, index: $index, x: $x, y: $y, originalX: $originalX, originalY: $originalY, theta: $theta, size: $size)';
+    return 'DragItem(id: $id, index: $index, x: $x, y: $y, theta: $theta, size: $size)';
   }
 
   @override
@@ -227,17 +183,12 @@ class _$DragItemImpl implements _DragItem {
             (identical(other.index, index) || other.index == index) &&
             (identical(other.x, x) || other.x == x) &&
             (identical(other.y, y) || other.y == y) &&
-            (identical(other.originalX, originalX) ||
-                other.originalX == originalX) &&
-            (identical(other.originalY, originalY) ||
-                other.originalY == originalY) &&
             (identical(other.theta, theta) || other.theta == theta) &&
             (identical(other.size, size) || other.size == size));
   }
 
   @override
-  int get hashCode => Object.hash(
-      runtimeType, id, index, x, y, originalX, originalY, theta, size);
+  int get hashCode => Object.hash(runtimeType, id, index, x, y, theta, size);
 
   @JsonKey(ignore: true)
   @override
@@ -252,8 +203,6 @@ abstract class _DragItem implements DragItem {
       required final int index,
       required final double x,
       required final double y,
-      required final double originalX,
-      required final double originalY,
       final double theta,
       final Size size}) = _$DragItemImpl;
 
@@ -265,10 +214,6 @@ abstract class _DragItem implements DragItem {
   double get x;
   @override
   double get y;
-  @override
-  double get originalX;
-  @override
-  double get originalY;
   @override
   double get theta;
   @override

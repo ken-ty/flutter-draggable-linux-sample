@@ -9,46 +9,57 @@ void main() {
   runApp(const ProviderScope(child: MyApp()));
 }
 
-class MyApp extends ConsumerWidget {
+class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
   static const title = 'Drag and Drop Example';
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return MaterialApp(
       title: title,
       debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text(title),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.add),
-              onPressed: () {
-                final notifier = ref.read(dragItemsProvider.notifier);
-                notifier.addItem();
-              },
-            ),
-          ],
-        ),
-        body: Row(
-          children: [
-            SizedBox(
-              width: 400,
-              child: _ReorderableControlsListView(),
-            ),
-            Flexible(child: const DragDropExample()),
-          ],
-        ),
+      home: ExampleScreen(),
+    );
+  }
+}
+
+/// メイン画面
+class ExampleScreen extends ConsumerWidget {
+  const ExampleScreen({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(MyApp.title),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.add),
+            onPressed: () {
+              final notifier = ref.read(dragItemsProvider.notifier);
+              notifier.addItem();
+            },
+          ),
+        ],
+      ),
+      body: Row(
+        children: [
+          SizedBox(width: 400, child: _ReorderableControlsListView()),
+          // Flexible で画面いっぱいに広がるようにする
+          Flexible(child: const DragDropExample()),
+        ],
       ),
     );
   }
 }
 
-final selectedItemsProvider =
-    StateProvider<Map<int, bool>>((ref) => {}); // id と選択状態をマッピング
+/// 選択されたアイテムの状態を管理するProvider
+///
+/// key: アイテムのID, value: 選択されたかどうか
+final selectedItemsProvider = StateProvider<Map<int, bool>>((ref) => {});
 
+/// リストビューのアイテムを表示するウィジェット
 class _ReorderableControlsListView extends ConsumerWidget {
   const _ReorderableControlsListView();
 
@@ -94,7 +105,7 @@ class _ReorderableControlsListView extends ConsumerWidget {
             ),
             onTap: () {
               debugPrint('Tapped on item with id: ${items[index].id}');
-              notifier.bringItemToFront(items[index].id); // 選択されたアイテムを最前面に移動
+              notifier.bringItemToFront(items[index].id);
               selectedNotifier.update((state) => {
                     ...state,
                     items[index].id: !(state[items[index].id] ?? false),
@@ -106,6 +117,7 @@ class _ReorderableControlsListView extends ConsumerWidget {
   }
 }
 
+/// ドラッグアイテムのデータクラス
 @freezed
 class DragItem with _$DragItem {
   static const defaultSize = Size(100, 60);
@@ -114,13 +126,12 @@ class DragItem with _$DragItem {
     required int index,
     required double x,
     required double y,
-    required double originalX,
-    required double originalY,
     @Default(0.0) double theta,
     @Default(DragItem.defaultSize) Size size,
   }) = _DragItem;
 }
 
+/// ドラッグアイテムの状態を管理するProvider
 final dragItemsProvider =
     StateNotifierProvider<DragItemsNotifier, List<DragItem>>((ref) {
   debugPrint('Initializing DragItemsProvider');
@@ -130,6 +141,7 @@ final dragItemsProvider =
 class DragItemsNotifier extends StateNotifier<List<DragItem>> {
   DragItemsNotifier(List<DragItem> state) : super(state);
 
+  /// [index] のアイテムの位置を更新する
   void updateItem(int index, double dx, double dy) {
     state = [
       for (int i = 0; i < state.length; i++)
@@ -143,6 +155,7 @@ class DragItemsNotifier extends StateNotifier<List<DragItem>> {
     ];
   }
 
+  /// [index] のアイテムの角度を [deltaTheta] だけ増加させる
   void incrementTheta(int index, double deltaTheta) {
     state = [
       for (int i = 0; i < state.length; i++)
@@ -153,6 +166,7 @@ class DragItemsNotifier extends StateNotifier<List<DragItem>> {
     ];
   }
 
+  /// 新しいアイテムを追加する
   void addItem() {
     debugPrint('Adding new item');
     final newId = state.isEmpty ? 0 : state.last.id + 1;
@@ -166,12 +180,11 @@ class DragItemsNotifier extends StateNotifier<List<DragItem>> {
         index: newIndex,
         x: newX,
         y: newY,
-        originalX: newX,
-        originalY: newY,
       ),
     ];
   }
 
+  /// [id] のアイテムを削除する
   void removeItem(int id) {
     debugPrint('Removing item with id: $id');
     state = [
@@ -181,6 +194,7 @@ class DragItemsNotifier extends StateNotifier<List<DragItem>> {
     ];
   }
 
+  /// [id] のアイテムを前面に持ってくる
   void bringItemToFront(int id) {
     debugPrint('Bringing item with id: $id to front');
     final itemToBring = state.firstWhere((item) => item.id == id);
@@ -192,6 +206,7 @@ class DragItemsNotifier extends StateNotifier<List<DragItem>> {
     ];
   }
 
+  /// アイテムの順序を入れ替える
   void reorderItem(int oldIndex, int newIndex) {
     debugPrint('Reordering item from index $oldIndex to index $newIndex');
     final item = state.removeAt(oldIndex);
@@ -202,6 +217,7 @@ class DragItemsNotifier extends StateNotifier<List<DragItem>> {
   }
 }
 
+/// ワークデスクのデータクラス
 @freezed
 class WorkDesk with _$WorkDesk {
   static const defaultSize = Size(400, 400);
@@ -213,10 +229,14 @@ class WorkDesk with _$WorkDesk {
   }) = _WorkDesk;
 }
 
+/// ドラッグアイテムのウィジェット
 class DragDropExample extends ConsumerWidget {
   const DragDropExample({Key? key}) : super(key: key);
 
-  /// ベースサイズと制約に基づいてスケールファクターを計算します
+  /// スケールファクターを計算します
+  ///
+  /// Layout された Widget のサイズに合わせてスケーリングするための係数を計算する.
+  /// FittedBox のような挙動を Drag and Drop のウィジェットに適用するために使用する為.
   double _caluculateScaleFactor(Size baseSize, BoxConstraints constraints) {
     final widthScaleFactor = constraints.biggest.width / baseSize.width;
     final heightScaleFactor = constraints.biggest.height / baseSize.height;
@@ -225,16 +245,21 @@ class DragDropExample extends ConsumerWidget {
     return scaleFactor;
   }
 
-  Size _calculateProportionalSize(Size baseSize, double scaleFactor) {
+  /// サイズをスケーリングします
+  ///
+  /// baseSize に scaleFactor を掛けたサイズを計算します
+  Size _scaleSize(Size baseSize, double scaleFactor) {
     return Size(baseSize.width * scaleFactor, baseSize.height * scaleFactor);
   }
 
+  /// ワークデスクの相対サイズを取得します
   Size _getRelativeWorkDeskSize(BoxConstraints constraints) {
     final baseSize = WorkDesk.defaultSize;
     final scaleFactor = _caluculateScaleFactor(baseSize, constraints);
-    return _calculateProportionalSize(baseSize, scaleFactor);
+    return _scaleSize(baseSize, scaleFactor);
   }
 
+  /// アイテムの相対サイズを取得します
   Size _getRelativeItemSize(Size itemAbsoluteSize, BoxConstraints constraints) {
     // ワークデスクとサイズ感を合わせたいので ワークデスクのサイズを基準にスケーリングする。
     final workBaseSize = WorkDesk.defaultSize;
@@ -249,16 +274,17 @@ class DragDropExample extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final items = ref.watch(dragItemsProvider);
+    final dragItems = ref.watch(dragItemsProvider);
+    final dragItemsNotifier = ref.read(dragItemsProvider.notifier);
     final selectedItems = ref.watch(selectedItemsProvider);
     final selectedNotifier = ref.read(selectedItemsProvider.notifier);
-    final notifier = ref.read(dragItemsProvider.notifier);
 
     return LayoutBuilder(
       builder: (context, constraints) {
         final workDeskSize = _getRelativeWorkDeskSize(constraints);
         return Stack(
           children: [
+            // 背景
             Positioned.fill(
               child: Container(
                 width: double.infinity,
@@ -266,6 +292,7 @@ class DragDropExample extends ConsumerWidget {
                 color: Colors.grey,
               ),
             ),
+            // ワークデスク
             Positioned.fill(
               child: Padding(
                 padding: const EdgeInsets.all(20),
@@ -278,48 +305,62 @@ class DragDropExample extends ConsumerWidget {
                 ),
               ),
             ),
-            ...List.generate(items.length, (index) {
+            // ドラッグアイテム
+            ...List.generate(dragItems.length, (index) {
               return Positioned(
-                left: items[index].x,
-                top: items[index].y,
+                left: dragItems[index].x,
+                top: dragItems[index].y,
                 child: GestureDetector(
                   onPanStart: (_) {
                     // ドラッグ開始
+                    debugPrint(
+                      'Drag started on item with id: ${dragItems[index].id}',
+                    );
                   },
                   onPanUpdate: (details) {
                     debugPrint(
-                        'Item moved by dx: ${details.delta.dx}, dy: ${details.delta.dy}');
-                    notifier.updateItem(
-                        index, details.delta.dx, details.delta.dy);
+                      'Item moved by dx: ${details.delta.dx}, dy: ${details.delta.dy}',
+                    );
+                    dragItemsNotifier.updateItem(
+                      index,
+                      details.delta.dx,
+                      details.delta.dy,
+                    );
                   },
                   onPanEnd: (_) {
                     // ドラッグ終了
+                    debugPrint(
+                      'Drag ended on item with id: ${dragItems[index].id}',
+                    );
                   },
                   onTap: () {
-                    debugPrint('Tapped on item with id: ${items[index].id}');
-                    notifier.bringItemToFront(items[index].id);
+                    debugPrint(
+                      'Tapped on item with id: ${dragItems[index].id}',
+                    );
+                    dragItemsNotifier.bringItemToFront(dragItems[index].id);
                     selectedNotifier.update((state) => {
                           ...state,
-                          items[index].id: !(state[items[index].id] ?? false),
+                          dragItems[index].id:
+                              !(state[dragItems[index].id] ?? false),
                         });
                   },
                   child: Transform.rotate(
-                    angle: items[index].theta,
+                    angle: dragItems[index].theta,
                     alignment: Alignment.center,
                     child: Container(
-                      width:
-                          _getRelativeItemSize(items[index].size, constraints)
-                              .width,
-                      height:
-                          _getRelativeItemSize(items[index].size, constraints)
-                              .height,
+                      width: _getRelativeItemSize(
+                              dragItems[index].size, constraints)
+                          .width,
+                      height: _getRelativeItemSize(
+                              dragItems[index].size, constraints)
+                          .height,
                       decoration: BoxDecoration(
-                        color: (selectedItems[items[index].id] ?? false)
+                        color: (selectedItems[dragItems[index].id] ?? false)
                             ? Colors.blue.withOpacity(0.7)
                             : Colors.primaries[
-                                items[index].id % Colors.primaries.length],
+                                dragItems[index].id % Colors.primaries.length],
                         border: Border.all(
-                          color: (selectedItems[items[index].id] ?? false)
+                          color: (selectedItems[dragItems[index].id] ?? false)
                               ? Colors.blue
                               : Colors.transparent,
                           width: 2,
@@ -328,7 +369,7 @@ class DragDropExample extends ConsumerWidget {
                       ),
                       child: Center(
                         child: Text(
-                          'Drag ${items[index].id + 1}',
+                          'Drag ${dragItems[index].id + 1}',
                           style: const TextStyle(color: Colors.white),
                         ),
                       ),
