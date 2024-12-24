@@ -70,7 +70,7 @@ class _ReorderableControlsListView extends ConsumerWidget {
             leading: CircleAvatar(
               backgroundColor: (selectedItems[items[index].id] ?? false)
                   ? Colors.blue
-                  : Colors.primaries[index % Colors.primaries.length],
+                  : Colors.primaries[items[index].id % Colors.primaries.length],
               child: Text('${items[index].id + 1}'),
             ),
             title: Text('Item ${items[index].id + 1}'),
@@ -228,7 +228,8 @@ class DragDropExample extends ConsumerWidget {
                       decoration: BoxDecoration(
                         color: (selectedItems[items[index].id] ?? false)
                             ? Colors.blue.withOpacity(0.7)
-                            : Colors.primaries[index % Colors.primaries.length],
+                            : Colors.primaries[
+                                items[index].id % Colors.primaries.length],
                         border: Border.all(
                           color: (selectedItems[items[index].id] ?? false)
                               ? Colors.blue
