@@ -200,6 +200,34 @@ class WorkDesk with _$WorkDesk {
 class DragDropExample extends ConsumerWidget {
   const DragDropExample({Key? key}) : super(key: key);
 
+  /// ベースサイズと制約に基づいてスケールファクターを計算します
+  double _caluculateScaleFactor(Size baseSize, BoxConstraints constraints) {
+    final scaleFactor = constraints.biggest.width / baseSize.width;
+    return scaleFactor;
+  }
+
+  Size _calculateProportionalSize(Size baseSize, double scaleFactor) {
+    return Size(baseSize.width * scaleFactor, baseSize.height * scaleFactor);
+  }
+
+  Size _getRelativeWorkDeskSize(BoxConstraints constraints) {
+    final baseSize = WorkDesk.defaultSize;
+    final scaleFactor = _caluculateScaleFactor(baseSize, constraints);
+    return _calculateProportionalSize(baseSize, scaleFactor);
+  }
+
+  Size _getRelativeItemSize(Size itemAbsoluteSize, BoxConstraints constraints) {
+    // ワークデスクとサイズ感を合わせたいので ワークデスクのサイズを基準にスケーリングする。
+    final workBaseSize = WorkDesk.defaultSize;
+    final scaleFactor = _caluculateScaleFactor(workBaseSize, constraints);
+
+    final relativeItemSize = Size(
+      itemAbsoluteSize.width * scaleFactor,
+      itemAbsoluteSize.height * scaleFactor,
+    );
+    return relativeItemSize;
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final items = ref.watch(dragItemsProvider);
@@ -207,90 +235,92 @@ class DragDropExample extends ConsumerWidget {
     final selectedNotifier = ref.read(selectedItemsProvider.notifier);
     final notifier = ref.read(dragItemsProvider.notifier);
 
-    final workDesk = WorkDesk(id: 0, x: 0, y: 0);
-
-    return Stack(
-      children: [
-        // Stack の背景色を目一杯広げる。 Stack の範囲を見るため
-        Positioned.fill(child: ColoredBox(color: Colors.grey)),
-        // 作業台を追加する
-        Positioned.fill(
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: FittedBox(
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final workDeskSize = _getRelativeWorkDeskSize(constraints);
+        return Stack(
+          children: [
+            Positioned.fill(
               child: Container(
-                width: workDesk.size.width,
-                height: workDesk.size.height,
-                color: Colors.brown,
+                color: Colors.grey,
               ),
             ),
-          ),
-        ),
-        // 作業台の外でもアイテムはDrag可能
-        for (int index = 0; index < items.length; index++)
-          // 2重で Stack しているのは rotate で 表示が見切れるのを防ぐ為
-          Stack(
-            children: [
-              Positioned(
-                left: items[index].x,
-                top: items[index].y,
-                child: GestureDetector(
-                  onPanStart: (_) {
-                    // ドラッグ開始
-                  },
-                  onPanUpdate: (details) {
-                    debugPrint(
-                      'Item moved by dx: ${details.delta.dx}, dy: ${details.delta.dy}',
-                    );
-                    notifier.updateItem(
-                      index,
-                      details.delta.dx,
-                      details.delta.dy,
-                    );
-                  },
-                  onPanEnd: (_) {
-                    // ドラッグ終了
-                  },
-                  onTap: () {
-                    // 選択状態をトグル
-                    notifier.bringItemToFront(items[index].id);
-                    selectedNotifier.update((state) => {
-                          ...state,
-                          items[index].id: !(state[items[index].id] ?? false),
-                        });
-                  },
-                  child: Transform.rotate(
-                    angle: items[index].theta,
-                    alignment: Alignment.center,
-                    child: Container(
-                      width: 100,
-                      height: 100,
-                      decoration: BoxDecoration(
-                        color: (selectedItems[items[index].id] ?? false)
-                            ? Colors.blue.withOpacity(0.7)
-                            : Colors.primaries[
-                                items[index].id % Colors.primaries.length],
-                        border: Border.all(
+            Positioned.fill(
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Center(
+                  child: Container(
+                    width: workDeskSize.width,
+                    height: workDeskSize.height,
+                    color: Colors.brown,
+                  ),
+                ),
+              ),
+            ),
+            ...List.generate(items.length, (index) {
+              return Positioned(
+                child: Positioned(
+                  left: items[index].x,
+                  top: items[index].y,
+                  child: GestureDetector(
+                    onPanStart: (_) {
+                      // ドラッグ開始
+                    },
+                    onPanUpdate: (details) {
+                      debugPrint(
+                          'Item moved by dx: ${details.delta.dx}, dy: ${details.delta.dy}');
+                      notifier.updateItem(
+                          index, details.delta.dx, details.delta.dy);
+                    },
+                    onPanEnd: (_) {
+                      // ドラッグ終了
+                    },
+                    onTap: () {
+                      debugPrint('Tapped on item with id: ${items[index].id}');
+                      notifier.bringItemToFront(items[index].id);
+                      selectedNotifier.update((state) => {
+                            ...state,
+                            items[index].id: !(state[items[index].id] ?? false),
+                          });
+                    },
+                    child: Transform.rotate(
+                      angle: items[index].theta,
+                      alignment: Alignment.center,
+                      child: Container(
+                        width:
+                            _getRelativeItemSize(items[index].size, constraints)
+                                .width,
+                        height:
+                            _getRelativeItemSize(items[index].size, constraints)
+                                .height,
+                        decoration: BoxDecoration(
                           color: (selectedItems[items[index].id] ?? false)
-                              ? Colors.blue
-                              : Colors.transparent,
-                          width: 2,
+                              ? Colors.blue.withOpacity(0.7)
+                              : Colors.primaries[
+                                  items[index].id % Colors.primaries.length],
+                          border: Border.all(
+                            color: (selectedItems[items[index].id] ?? false)
+                                ? Colors.blue
+                                : Colors.transparent,
+                            width: 2,
+                          ),
+                          borderRadius: BorderRadius.circular(10),
                         ),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Center(
-                        child: Text(
-                          'Drag ${items[index].id + 1}',
-                          style: const TextStyle(color: Colors.white),
+                        child: Center(
+                          child: Text(
+                            'Drag ${items[index].id + 1}',
+                            style: const TextStyle(color: Colors.white),
+                          ),
                         ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            ],
-          ),
-      ],
+              );
+            }),
+          ],
+        );
+      },
     );
   }
 }
