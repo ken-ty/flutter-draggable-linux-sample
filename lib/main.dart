@@ -108,7 +108,7 @@ class _ReorderableControlsListView extends ConsumerWidget {
 
 @freezed
 class DragItem with _$DragItem {
-  static const defaultSize = Size(100, 100);
+  static const defaultSize = Size(100, 60);
   const factory DragItem({
     required int id,
     required int index,
@@ -218,7 +218,10 @@ class DragDropExample extends ConsumerWidget {
 
   /// ベースサイズと制約に基づいてスケールファクターを計算します
   double _caluculateScaleFactor(Size baseSize, BoxConstraints constraints) {
-    final scaleFactor = constraints.biggest.width / baseSize.width;
+    final widthScaleFactor = constraints.biggest.width / baseSize.width;
+    final heightScaleFactor = constraints.biggest.height / baseSize.height;
+    // 画面で見きれないよう小さい値を採用する
+    final scaleFactor = min(widthScaleFactor, heightScaleFactor);
     return scaleFactor;
   }
 
